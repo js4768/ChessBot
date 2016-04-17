@@ -1,57 +1,85 @@
+#!/usr/bin/env python
 # This code talks to the Stockfish Chess Engine. Entries are to be made in algebraic
 # chess notation (eg. e2e4). Stockfish is set to think for a maximum of 1 sec.
 
 import sys
 import subprocess as S
-
-
-def make_hori_grid():
-    print(' +---+---+---+---+---+---+---+---+')
-
-
-def make_row(r):
-    col_index = ord('a')
-    row = str(r+1)
-    while col_index <= ord('h'):
-        row += '| '
-        if board[chr(col_index)][r] != 'E':
-            row += board[chr(col_index)][r] + ' '
-        else:
-            row += '  '
-        col_index += 1
-    row += '|'
-    print(row)
-
-
-def render_board():
-    make_hori_grid()
-    row_index = 7
-    while row_index >= 0:
-        make_row(row_index)
-        row_index -= 1
-        make_hori_grid()
-    print('   a   b   c   d   e   f   g   h')
+import detect_position as DP
 
 
 def move_piece(path):
-    start_c = path[0]
-    start_r = int(path[1])-1
-    end_c = path[2]
-    end_r = int(path[3])-1
-    piece = board[start_c][start_r]
-    board[end_c][end_r] = piece
-    board[start_c][start_r] = 'E'
+    move = ''
+    taken = ''
+    castling = ''
+    castling_move = ''
+    for c in chess_table:
+        # A piece will be taken out
+        if chess_table[c] == path[2:4]:
+            chess_table[c] = 'taken'
+            taken = c
+    for c in chess_table:
+        # Find the piece to move
+        if chess_table[c] == path[0:2]:
+            chess_table[c] = path[2:4]
+            move = c
+            if c == 'king_w' and path[0:2] == 'e1':
+                if path[2:4] == 'g1':
+                    chess_table['castle_w_h'] = 'f1'
+                    chess_table[c] = 'g1'
+                    castling = 'castle_w_h'
+                    castling_move = 'h1f1'
+                elif path[2:4] == 'c1':
+                    chess_table['castle_w_a'] = 'd1'
+                    chess_table[c] = 'c1'
+                    castling = 'castle_w_a'
+                    castling_move = 'a1c1'
+            elif c == 'king_b' and path[0:2] == 'e8':
+                if path[2:4] == 'g8':
+                    chess_table['castle_b_h'] = 'f8'
+                    chess_table[c] = 'g8'
+                    castling = 'castle_b_h'
+                    castling_move = 'h8f8'
+                elif path[2:4] == 'c8':
+                    chess_table['castle_b_a'] = 'd8'
+                    chess_table[c] = 'c8'
+                    castling = 'castle_b_a'
+                    castling_move = 'a8d8'
+    return move, taken, castling, castling_move
 
-board = {'a': ['C', 'P', 'E', 'E', 'E', 'E', 'P', 'C'],
-         'b': ['N', 'P', 'E', 'E', 'E', 'E', 'P', 'N'],
-         'c': ['B', 'P', 'E', 'E', 'E', 'E', 'P', 'B'],
-         'd': ['Q', 'P', 'E', 'E', 'E', 'E', 'P', 'Q'],
-         'e': ['K', 'P', 'E', 'E', 'E', 'E', 'P', 'K'],
-         'f': ['B', 'P', 'E', 'E', 'E', 'E', 'P', 'B'],
-         'g': ['N', 'P', 'E', 'E', 'E', 'E', 'P', 'N'],
-         'h': ['C', 'P', 'E', 'E', 'E', 'E', 'P', 'C']}
-render_board()
-chess = r'/usr/local/bin/stockfish'.split()['linux' in sys.platform]
+chess_table = {'king_w':'e1',\
+            'king_b':'e8',\
+            'queen_w':'d1',\
+            'queen_b':'d8',\
+            'bishop_w_c':'c1',\
+            'bishop_w_f':'f1',\
+            'bishop_b_c':'c8',\
+            'bishop_b_f':'f8',\
+            'knight_w_b':'b1',\
+            'knight_w_g':'g1',\
+            'knight_b_b':'b8',\
+            'knight_b_g':'g8',\
+            'castle_w_a':'a1',\
+            'castle_w_h':'h1',\
+            'castle_b_a':'a8',\
+            'castle_b_h':'h8',\
+            'pawn_w_a':'a2',\
+            'pawn_w_b':'b2',\
+            'pawn_w_c':'c2',\
+            'pawn_w_d':'d2',\
+            'pawn_w_e':'e2',\
+            'pawn_w_f':'f2',\
+            'pawn_w_g':'g2',\
+            'pawn_w_h':'h2',\
+            'pawn_b_a':'a7',\
+            'pawn_b_b':'b7',\
+            'pawn_b_c':'c7',\
+            'pawn_b_d':'d7',\
+            'pawn_b_e':'e7',\
+            'pawn_b_f':'f7',\
+            'pawn_b_g':'g7',\
+            'pawn_b_h':'h7'}
+
+chess = r'/home/js4768/stockfish-7-linux/src/stockfish'
 getprompt = 'isready\n'
 done = 'readyok'
 
@@ -64,35 +92,44 @@ while True:
         break
 
 proc.stdin.write('uci\n')
-
 while True:
     text = proc.stdout.readline().strip()
-    print(text)
+    print text
     if text == "uciok":
         break
-
-print('Choose skill level (0-20):')
-skillLevel = input()
-proc.stdin.write('setoption name Skill Level value '+skillLevel+'\n')
+skillLevel = raw_input('Choose skill level (0-20):')
+proc.stdin.write('setoption name Skill Level value '+str(skillLevel)+'\n')
 proc.stdin.write('ucinewgame\n')
+
+# Load ROS chess position reader
+pu = DP.PositionUpdater()
+pu.update_all_positions()
+pu.get_all_positions()
 
 moveList = 'position startpos moves '
 checkmate = False
 while checkmate is False:
-    print('Enter move:')
-    move = input()
-    move_piece(move)
-    render_board()
+    move = raw_input('Enter move:')
+    chess_name, taken, castling, castling_move = move_piece(move)
+    if taken != '':
+        pu.takeout(taken)
+    pu.advance(chess_name, move)
+    if castling != '':
+        pu.advance(castling, castling_move)
     moveList = moveList+move+' '
     proc.stdin.write(moveList+'\n')
     proc.stdin.write('go movetime 1000\n')
-    print('Computer moves:')
+    print 'Computer moves:'
     while True:
         text = proc.stdout.readline().strip()
         if text[0:8] == 'bestmove':
             cpuMove = text[9:13]
-            print(cpuMove)
+            print cpuMove
             moveList = moveList+cpuMove+' '
-            move_piece(cpuMove)
-            render_board()
+            chess_name, taken, castling, castling_move = move_piece(cpuMove)
+            if taken != '':
+                pu.takeout(taken)
+            pu.advance(chess_name, cpuMove)
+            if castling != '':
+                pu.advance(castling, castling_move)
             break
