@@ -5,10 +5,12 @@ import rospy
 from gazebo_msgs.srv import *
 from gazebo_msgs.msg import *
 from geometry_msgs.msg import *
-
+import move_hand_interface as MH
 
 class PositionUpdater():
     def __init__(self):
+        self.offset = 0.15 - 0.93
+        self.hand_planner = MH.HandMover()
         self.step = 0.0596
         self.trash = (0.6, -0.3, 0.6)
         self.chess_table = {'king_w':(0, 0, 0),\
@@ -70,7 +72,7 @@ class PositionUpdater():
 		new_pos = self.get_model_state(name, None).pose.position
 		self.chess_table[name][0] = (new_pos.x, new_pos.y, new_pos.z)
 
-    def set_position(self, name, x, y, z):
+    def set_position(self, name, x, y, z, isRobot=False):
         new_model_state = ModelState()
         new_pose = Pose()
         new_pose.position = Point(x, y, z)
@@ -84,29 +86,43 @@ class PositionUpdater():
         new_model_state.reference_frame = ""
         resp = self.set_model_state(new_model_state)
         self.chess_table[name] = (x, y, z)
-        print bool(resp.success)
 
     def advance(self, name, move):
-		if len(move) != 4:
-			print 'Invalid move format!'
-		else:
-			start_y = move[0]
-			start_x = move[1]
-			end_y = move[2]
-			end_x = move[3]
-			s = 'abcdefgh'
-			delta_x = -self.step * (int(end_x) - int(start_x))
-			delta_y = self.step * (s.find(end_y) - s.find(start_y))
-			prev_pos = self.read_position(name)
-			self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
+        if len(move) != 4:
+            print 'Invalid move format!'
+        else:
+            start_y = move[0]
+            start_x = move[1]
+            end_y = move[2]
+            end_x = move[3]
+            s = 'abcdefgh'
+            delta_x = -self.step * (int(end_x) - int(start_x))
+            delta_y = self.step * (s.find(end_y) - s.find(start_y))
+            prev_pos = self.read_position(name)
+            if '_b_' in name:
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+                # TODO Pick up chess
+
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset)
+                # TODO Drop chess
+
+            self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
 
     def takeout(self, name):
         if '_w_' in name:
             self.set_position(name, self.trash[0] + 0.3, self.trash[1], self.trash[2])
         else:
+            prev_pos = self.read_position(name)
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+            # TODO Pick up chess
+
             self.set_position(name, self.trash[0] - 0.3, self.trash[1], self.trash[2])
 
+            self.hand_planner.move_hand_interface(self.trash[0] - 0.3, self.trash[1], self.trash[2])
+            # TODO Drop chess
 
+    def shutdown(self):
+        self.hand_planner.shutdown()
 
 
 

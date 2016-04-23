@@ -109,27 +109,36 @@ pu.get_all_positions()
 moveList = 'position startpos moves '
 checkmate = False
 while checkmate is False:
-    move = raw_input('Enter move:')
-    chess_name, taken, castling, castling_move = move_piece(move)
-    if taken != '':
-        pu.takeout(taken)
-    pu.advance(chess_name, move)
-    if castling != '':
-        pu.advance(castling, castling_move)
-    moveList = moveList+move+' '
-    proc.stdin.write(moveList+'\n')
-    proc.stdin.write('go movetime 1000\n')
-    print 'Computer moves:'
-    while True:
-        text = proc.stdout.readline().strip()
-        if text[0:8] == 'bestmove':
-            cpuMove = text[9:13]
-            print cpuMove
-            moveList = moveList+cpuMove+' '
-            chess_name, taken, castling, castling_move = move_piece(cpuMove)
-            if taken != '':
-                pu.takeout(taken)
-            pu.advance(chess_name, cpuMove)
-            if castling != '':
-                pu.advance(castling, castling_move)
+    try:
+        move = raw_input('Enter move:')
+        if move == 'exit':
+            print 'Exiting program...'
+            pu.shutdown()
             break
+        chess_name, taken, castling, castling_move = move_piece(move)
+        if taken != '':
+            pu.takeout(taken)
+        pu.advance(chess_name, move)
+        if castling != '':
+            pu.advance(castling, castling_move)
+        moveList = moveList+move+' '
+        proc.stdin.write(moveList+'\n')
+        proc.stdin.write('go movetime 1000\n')
+        print 'Computer moves:'
+        while True:
+            text = proc.stdout.readline().strip()
+            if text[0:8] == 'bestmove':
+                cpuMove = text[9:13]
+                print cpuMove
+                moveList = moveList+cpuMove+' '
+                chess_name, taken, castling, castling_move = move_piece(cpuMove)
+                if taken != '':
+                    pu.takeout(taken)
+                pu.advance(chess_name, cpuMove)
+                if castling != '':
+                    pu.advance(castling, castling_move)
+                break
+    except KeyboardInterrupt:
+        print 'Ctrl-C trapped. Exiting...'
+        pu.shutdown()
+        break
