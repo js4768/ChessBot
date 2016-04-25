@@ -6,6 +6,7 @@ from gazebo_msgs.srv import *
 from gazebo_msgs.msg import *
 from geometry_msgs.msg import *
 import move_hand_interface as MH
+import random
 
 class PositionUpdater():
     def __init__(self):
@@ -45,6 +46,38 @@ class PositionUpdater():
             'pawn_b_f':(0, 0, 0),\
             'pawn_b_g':(0, 0, 0),\
             'pawn_b_h':(0, 0, 0)}
+        self.initial_positions = {'king_w':(0, 0, 0),\
+            'king_b':(0, 0, 0),\
+            'queen_w':(0, 0, 0),\
+            'queen_b':(0, 0, 0),\
+            'bishop_w_c':(0, 0, 0),\
+            'bishop_w_f':(0, 0, 0),\
+            'bishop_b_c':(0, 0, 0),\
+            'bishop_b_f':(0, 0, 0),\
+            'knight_w_b':(0, 0, 0),\
+            'knight_w_g':(0, 0, 0),\
+            'knight_b_b':(0, 0, 0),\
+            'knight_b_g':(0, 0, 0),\
+            'castle_w_a':(0, 0, 0),\
+            'castle_w_h':(0, 0, 0),\
+            'castle_b_a':(0, 0, 0),\
+            'castle_b_h':(0, 0, 0),\
+            'pawn_w_a':(0, 0, 0),\
+            'pawn_w_b':(0, 0, 0),\
+            'pawn_w_c':(0, 0, 0),\
+            'pawn_w_d':(0, 0, 0),\
+            'pawn_w_e':(0, 0, 0),\
+            'pawn_w_f':(0, 0, 0),\
+            'pawn_w_g':(0, 0, 0),\
+            'pawn_w_h':(0, 0, 0),\
+            'pawn_b_a':(0, 0, 0),\
+            'pawn_b_b':(0, 0, 0),\
+            'pawn_b_c':(0, 0, 0),\
+            'pawn_b_d':(0, 0, 0),\
+            'pawn_b_e':(0, 0, 0),\
+            'pawn_b_f':(0, 0, 0),\
+            'pawn_b_g':(0, 0, 0),\
+            'pawn_b_h':(0, 0, 0)}
         rospy.wait_for_service('gazebo/get_model_state')
         rospy.wait_for_service('gazebo/set_model_state')
         try:
@@ -52,6 +85,11 @@ class PositionUpdater():
             self.set_model_state = rospy.ServiceProxy('gazebo/set_model_state', SetModelState)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
+
+    def record_initial_state(self):
+        for c in self.initial_positions:
+            current_position = self.read_position(c)
+            self.initial_positions[c] = (current_position.x, current_position.y, current_position.z)
 
     def read_position(self, name):
         resp = self.get_model_state(name, None)
@@ -68,11 +106,11 @@ class PositionUpdater():
             current_position = self.read_position(c)
             self.chess_table[c] = (current_position.x, current_position.y, current_position.z)
 
-	def update_position(self, name):
-		new_pos = self.get_model_state(name, None).pose.position
-		self.chess_table[name][0] = (new_pos.x, new_pos.y, new_pos.z)
+    def update_position(self, name):
+        new_pos = self.get_model_state(name, None).pose.position
+        self.chess_table[name][0] = (new_pos.x, new_pos.y, new_pos.z)
 
-    def set_position(self, name, x, y, z, isRobot=False):
+    def set_position(self, name, x, y, z):
         new_model_state = ModelState()
         new_pose = Pose()
         new_pose.position = Point(x, y, z)
@@ -101,11 +139,29 @@ class PositionUpdater():
             prev_pos = self.read_position(name)
             if '_b_' in name:
                 self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+                print "approach"
                 # TODO Pick up chess
-
-                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset)
+                
+                self.hand_planner.gripper_open()
+                print "open"
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.02 - 0.93)
+                print "down"
+                self.hand_planner.gripper_close()
+                print "close"
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+                print "up"
                 # TODO Drop chess
-
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset)
+                print "approach"
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + 0.02 - 0.93)
+                print "down"
+                self.hand_planner.gripper_open()
+                print "open"
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset)
+                print "up"
+                # TODO Return to safe place
+                self.hand_planner.move_hand_interface(0.3, 0, 0)
+                print "Return to safe pose"
             self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
 
     def takeout(self, name):
@@ -115,26 +171,31 @@ class PositionUpdater():
             prev_pos = self.read_position(name)
             self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
             # TODO Pick up chess
-
-            self.set_position(name, self.trash[0] - 0.3, self.trash[1], self.trash[2])
+            self.hand_planner.gripper_open()
+            print "open"
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.02 - 0.93)
+            print "down"
+            self.hand_planner.gripper_close()
+            print "close"
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+            print "up"
 
             self.hand_planner.move_hand_interface(self.trash[0] - 0.3, self.trash[1], self.trash[2])
             # TODO Drop chess
+            self.hand_planner.gripper_open()
+            print "open"
+
+    def reset_board(self):
+        # First move every piece to somewhere else
+        for c in self.chess_table:
+            self.set_position(c, random.random()+3, random.random()+3, random.random())
+        # Put every piece back
+        for c in self.initial_positions:
+            initial_pos = self.initial_positions[c]
+            self.set_position(c, initial_pos[0], initial_pos[1], initial_pos[2])
 
     def shutdown(self):
         self.hand_planner.shutdown()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
