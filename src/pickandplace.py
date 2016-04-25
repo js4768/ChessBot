@@ -213,7 +213,7 @@ def main():
 	pnp.move_to_start(starting_joint_angles)
 	idx = 0
 	# while not rospy.is_shutdown():
-	print pose
+
 	print "\nPicking..."
 	pnp.pick(block_poses[idx])
 	print "\nPlacing..."

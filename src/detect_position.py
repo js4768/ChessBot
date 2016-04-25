@@ -13,7 +13,7 @@ class PositionUpdater():
         self.offset = 0.15 - 0.93
         self.hand_planner = MH.HandMover()
         self.step = 0.0596
-        self.trash = (0.6, -0.3, 0.6)
+        self.trash = (0.6, -0.3, 0.6 + self.offset)
         self.chess_table = {'king_w':(0, 0, 0),\
             'king_b':(0, 0, 0),\
             'queen_w':(0, 0, 0),\

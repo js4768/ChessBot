@@ -13,6 +13,7 @@ Quaternion,
 import tf
 from std_msgs.msg import String
 
+import baxter_interface
 
 class HandMover():
 	def __init__(self):
@@ -36,14 +37,18 @@ class HandMover():
 		self.group = moveit_commander.MoveGroupCommander("left_arm")
 		self.listener = tf.TransformListener()
 		self.listener.waitForTransform("/base", 'left_gripper', rospy.Time(0), rospy.Duration(3.0));
+		self._limb = baxter_interface.Limb('left')
+		self._gripper = baxter_interface.Gripper('left')
 
 	def move_hand_interface(self, x, y, z):
 		(trans, rot) = self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
 		rotation = geometry_msgs.msg.Quaternion()
-		rotation.x = rot[0]
-		rotation.y = rot[1]
-		rotation.z = rot[2]
-		rotation.w = rot[3]
+		rotation.x = -0.0249590815779
+		rotation.y = 0.999649402929
+		rotation.z = 0.00737916180073
+		rotation.w = 0.00486450832011
+		print "rotation"
+		print rotation
 		#quaternion = (rot[0], rot[1],rot[2],rot[3])
 		#print tf.transformations.euler_from_quaternion(quaternion)
 		pose_target = geometry_msgs.msg.Pose()
@@ -54,7 +59,7 @@ class HandMover():
 		pose_target.position.x = x
 		pose_target.position.y = y
 		pose_target.position.z = z
-
+		
 		self.group.set_pose_target(pose_target)
 		print '============Waiting for execution...'
 		print 'Target position: %s, %s, %s' % (x, y, z)
@@ -62,7 +67,16 @@ class HandMover():
 		self.group.go(wait=True)
 
 		self.group.clear_pose_targets()
+		return self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
 
+	def gripper_open(self):
+		self._gripper.open()
+		rospy.sleep(1.0)
+
+	def gripper_close(self):
+		self._gripper.close()
+		rospy.sleep(1.0)
+		
 	def shutdown(self):
 		moveit_commander.roscpp_shutdown()
 
