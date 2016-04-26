@@ -12,8 +12,13 @@ Quaternion,
 )
 import tf
 from std_msgs.msg import String
-
 import baxter_interface
+from baxter_core_msgs.msg import (
+    EndEffectorCommand,
+    EndEffectorProperties,
+    EndEffectorState,
+)
+
 
 class HandMover():
 	def __init__(self):
@@ -34,14 +39,17 @@ class HandMover():
 		## to one group of joints.  In this case the group is the joints in the left
 		## arm.  This interface can be used to plan and execute motions on the left
 		## arm.
-		self.group = moveit_commander.MoveGroupCommander("left_arm")
-		self.listener = tf.TransformListener()
-		self.listener.waitForTransform("/base", 'left_gripper', rospy.Time(0), rospy.Duration(3.0));
-		self._limb = baxter_interface.Limb('left')
-		self._gripper = baxter_interface.Gripper('left')
+		self.left_group = moveit_commander.MoveGroupCommander("left_arm")
+		self.right_group = moveit_commander.MoveGroupCommander("right_arm")
+		#self.listener = tf.TransformListener()
+		#self.listener.waitForTransform("/base", 'left_gripper', rospy.Time(0), rospy.Duration(3.0));
+		#self._limb = baxter_interface.Limb('left')
+		self._left_gripper = baxter_interface.Gripper('left')
+		self._right_gripper = baxter_interface.Gripper('right')
+		self.gripper_close()
 
-	def move_hand_interface(self, x, y, z):
-		(trans, rot) = self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
+	def move_hand_interface(self, x, y, z, arm='left'):
+		#(trans, rot) = self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
 		rotation = geometry_msgs.msg.Quaternion()
 		rotation.x = -0.0249590815779
 		rotation.y = 0.999649402929
@@ -60,23 +68,36 @@ class HandMover():
 		pose_target.position.y = y
 		pose_target.position.z = z
 		
-		self.group.set_pose_target(pose_target)
-		print '============Waiting for execution...'
-		print 'Target position: %s, %s, %s' % (x, y, z)
-		self.group.plan()
-		self.group.go(wait=True)
+		if arm == 'left':
+			self.left_group.set_pose_target(pose_target)
+			print '============Waiting for moving left arm...'
+			print 'Target position: %s, %s, %s' % (x, y, z)
+			self.left_group.plan()
+			self.left_group.go(wait=True)
+			self.left_group.clear_pose_targets()
+		elif arm == 'right':
+			self.right_group.set_pose_target(pose_target)
+			print '============Waiting for moving right arm...'
+			print 'Target position: %s, %s, %s' % (x, y, z)
+			self.right_group.plan()
+			self.right_group.go(wait=True)
+			self.right_group.clear_pose_targets()
+		else:
+			print '============Error. No arm specified========='
+		#return self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
 
-		self.group.clear_pose_targets()
-		return self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
-
-	def gripper_open(self):
-		self._gripper.open()
+	def gripper_open(self, block = False, timeout = 5.0):
+		self._left_gripper.command_position(position=70.0, block=block, timeout=timeout)
+		self._right_gripper.command_position(position=70.0, block=block, timeout=timeout)
 		rospy.sleep(1.0)
 
 	def gripper_close(self):
-		self._gripper.close()
+		self._left_gripper.set_velocity(2)
+		self._right_gripper.set_velocity(2)
+		self._left_gripper.close()
+		self._right_gripper.close()
 		rospy.sleep(1.0)
-		
+
 	def shutdown(self):
 		moveit_commander.roscpp_shutdown()
 

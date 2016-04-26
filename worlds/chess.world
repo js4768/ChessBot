@@ -8,7 +8,7 @@
       <uri>model://sun</uri>
     </include>
     <model name="chessboard">
-	<pose>0.398503 0.280987 0.5798 0 0 -1.570801</pose>
+	<pose>0.398503 0.280987 0.7798 0 0 -1.570801</pose>
 	<static>true</static>
         <link name="body">
 	    <gravity>false</gravity>
@@ -32,7 +32,7 @@
         </link>
     </model>
     <model name="castle_b_a">
-		<pose>0.45 -0.194 0.588 0 0 0</pose>
+		<pose>0.45 -0.194 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -69,7 +69,7 @@
         </link>
     </model>
 	<model name="castle_w_a">
-		<pose>0.873 -0.194 0.588 0 0 0</pose>
+		<pose>0.873 -0.194 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -106,7 +106,7 @@
         </link>
     </model>
 	<model name="castle_b_h">
-		<pose>0.450 0.228 0.588 0 0 0</pose>
+		<pose>0.450 0.228 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -143,7 +143,7 @@
         </link>
     </model>
 	<model name="castle_w_h">
-		<pose>0.873 0.228 0.588 0 0 0</pose>
+		<pose>0.873 0.228 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -180,7 +180,7 @@
         </link>
     </model>
 	<model name="knight_b_b">
-		<pose>0.45 -0.134 0.588 0 0 0</pose>
+		<pose>0.45 -0.134 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -217,7 +217,7 @@
         </link>
     </model>
 	<model name="knight_w_b">
-		<pose>0.873 -0.134 0.588 0 0 0</pose>
+		<pose>0.873 -0.134 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -254,7 +254,7 @@
         </link>
     </model>
 	<model name="knight_b_g">
-		<pose>0.45 0.168 0.588 0 0 0</pose>
+		<pose>0.45 0.168 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -291,7 +291,7 @@
         </link>
     </model>
 	<model name="knight_w_g">
-		<pose>0.873 0.168 0.588 0 0 0</pose>
+		<pose>0.873 0.168 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -328,7 +328,7 @@
         </link>
     </model>
 	<model name="bishop_b_c">
-		<pose>0.45 -0.0734 0.588 0 0 0</pose>
+		<pose>0.45 -0.0734 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -365,7 +365,7 @@
         </link>
     </model>
 	<model name="bishop_w_c">
-		<pose>0.873 -0.0734 0.588 0 0 0</pose>
+		<pose>0.873 -0.0734 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -402,7 +402,7 @@
         </link>
     </model>
 	<model name="bishop_b_f">
-		<pose>0.45 0.107 0.588 0 0 0</pose>
+		<pose>0.45 0.107 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -439,7 +439,7 @@
         </link>
     </model>
 	<model name="bishop_w_f">
-		<pose>0.873 0.107 0.588 0 0 0</pose>
+		<pose>0.873 0.107 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -476,7 +476,7 @@
         </link>
     </model>
 	<model name="queen_w">
-		<pose>0.873 -0.0131 0.588 0 0 0</pose>
+		<pose>0.873 -0.0131 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -513,7 +513,7 @@
         </link>
     </model>
 	<model name="queen_b">
-		<pose>0.45 -0.0131 0.588 0 0 0</pose>
+		<pose>0.45 -0.0131 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -550,7 +550,7 @@
         </link>
     </model>
 	<model name="king_w">
-		<pose>0.873 0.0471 0.588 0 0 0</pose>
+		<pose>0.873 0.0471 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -587,7 +587,7 @@
         </link>
     </model>
 	<model name="king_b">
-		<pose>0.45 0.0471 0.588 0 0 0</pose>
+		<pose>0.45 0.0471 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -624,7 +624,7 @@
         </link>
     </model>
 	<model name="pawn_w_a">
-		<pose>0.813 -0.194 0.588 0 0 0</pose>
+		<pose>0.813 -0.194 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -661,7 +661,7 @@
         </link>
     </model>
 	<model name="pawn_w_b">
-		<pose>0.813 -0.134 0.588 0 0 0</pose>
+		<pose>0.813 -0.134 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -698,7 +698,7 @@
         </link>
     </model>
 	<model name="pawn_w_c">
-		<pose>0.813 -0.0734 0.588 0 0 0</pose>
+		<pose>0.813 -0.0734 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -735,7 +735,7 @@
         </link>
     </model>
 	<model name="pawn_w_d">
-		<pose>0.813 -0.0131 0.588 0 0 0</pose>
+		<pose>0.813 -0.0131 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -772,7 +772,7 @@
         </link>
     </model>
 	<model name="pawn_w_e">
-		<pose>0.813 0.0471 0.588 0 0 0</pose>
+		<pose>0.813 0.0471 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -809,7 +809,7 @@
         </link>
     </model>
 	<model name="pawn_w_f">
-		<pose>0.813 0.107 0.588 0 0 0</pose>
+		<pose>0.813 0.107 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -846,7 +846,7 @@
         </link>
     </model>
 	<model name="pawn_w_g">
-		<pose>0.813 0.168 0.588 0 0 0</pose>
+		<pose>0.813 0.168 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -883,7 +883,7 @@
         </link>
     </model>
 	<model name="pawn_w_h">
-		<pose>0.813 0.228 0.588 0 0 0</pose>
+		<pose>0.813 0.228 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -920,7 +920,7 @@
         </link>
     </model>
 	<model name="pawn_b_a">
-		<pose>0.510 -0.194 0.588 0 0 0</pose>
+		<pose>0.510 -0.194 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -957,7 +957,7 @@
         </link>
     </model>
 	<model name="pawn_b_b">
-		<pose>0.510 -0.134 0.588 0 0 0</pose>
+		<pose>0.510 -0.134 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -994,7 +994,7 @@
         </link>
     </model>
 	<model name="pawn_b_c">
-		<pose>0.510 -0.0734 0.588 0 0 0</pose>
+		<pose>0.510 -0.0734 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -1031,7 +1031,7 @@
         </link>
     </model>
 	<model name="pawn_b_d">
-		<pose>0.51 -0.0131 0.588 0 0 0</pose>
+		<pose>0.51 -0.0131 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -1068,7 +1068,7 @@
         </link>
     </model>
 	<model name="pawn_b_e">
-		<pose>0.51 0.0471 0.588 0 0 0</pose>
+		<pose>0.51 0.0471 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -1105,7 +1105,7 @@
         </link>
     </model>
 	<model name="pawn_b_f">
-		<pose>0.51 0.107 0.588 0 0 0</pose>
+		<pose>0.51 0.107 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -1142,7 +1142,7 @@
         </link>
     </model>
 	<model name="pawn_b_g">
-		<pose>0.51 0.168 0.588 0 0 0</pose>
+		<pose>0.51 0.168 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>
@@ -1179,7 +1179,7 @@
         </link>
     </model>
 	<model name="pawn_b_h">
-		<pose>0.51 0.228 0.588 0 0 0</pose>
+		<pose>0.51 0.228 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
 	    	<gravity>true</gravity>

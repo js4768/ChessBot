@@ -13,7 +13,10 @@ class PositionUpdater():
         self.offset = 0.15 - 0.93
         self.hand_planner = MH.HandMover()
         self.step = 0.0596
-        self.trash = (0.6, -0.3, 0.6 + self.offset)
+        self.left_trash = (0.6, 0.3, 0.6 + self.offset)
+        self.right_trash = (0.6, -0.3, 0.6 + self.offset)
+        self.left_arm_region = ['h1', 'g1', 'f1', 'h2', 'g2', 'f2', 'h3', 'g3', 'f3']
+        self.right_arm_region = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3']
         self.chess_table = {'king_w':(0, 0, 0),\
             'king_b':(0, 0, 0),\
             'queen_w':(0, 0, 0),\
@@ -138,49 +141,73 @@ class PositionUpdater():
             delta_y = self.step * (s.find(end_y) - s.find(start_y))
             prev_pos = self.read_position(name)
             if '_b_' in name:
-                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+                arm = 'left'
+		# If chess is unreachable by left arm
+                if move[0:2] in self.right_arm_region:
+                    arm = 'right'
+                    # Impossible reaches by robot. Put the piece to destination directly
+                    if move[2:4] in self.left_arm_region:
+                        self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
+                        return
+		if move[2:4] in self.right_arm_region:
+                    arm = 'right'
+                    if move[0:2] in self.left_arm_region:
+                        self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
+                        return
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset, arm)
                 print "approach"
                 # TODO Pick up chess
                 
                 self.hand_planner.gripper_open()
                 print "open"
-                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.02 - 0.93)
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.0145 - 0.93, arm)
                 print "down"
                 self.hand_planner.gripper_close()
                 print "close"
-                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset, arm)
                 print "up"
                 # TODO Drop chess
-                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset)
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset, arm)
                 print "approach"
-                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + 0.02 - 0.93)
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + 0.015 - 0.93, arm)
                 print "down"
                 self.hand_planner.gripper_open()
                 print "open"
-                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset)
+                self.hand_planner.move_hand_interface(prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z + self.offset, arm)
                 print "up"
                 # TODO Return to safe place
-                self.hand_planner.move_hand_interface(0.3, 0, 0)
+                if arm == 'left':
+                    self.hand_planner.move_hand_interface(0.3, 0.3, 0.1, arm)
+                if arm == 'right':
+                    self.hand_planner.move_hand_interface(0.3, -0.3, 0.1, arm)
                 print "Return to safe pose"
             self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
 
     def takeout(self, name):
-        if '_w_' in name:
-            self.set_position(name, self.trash[0] + 0.3, self.trash[1], self.trash[2])
+        if '_b_' in name:
+            self.set_position(name, self.left_trash[0], self.left_trash[1], self.left_trash[2])
         else:
             prev_pos = self.read_position(name)
-            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+            arm = 'left'
+            # If the chess is in right hand side, use right arm
+            if prev_pos.y < 0:
+                arm = 'right'
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset, arm)
             # TODO Pick up chess
             self.hand_planner.gripper_open()
             print "open"
-            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.02 - 0.93)
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.0145 - 0.93, arm)
             print "down"
             self.hand_planner.gripper_close()
             print "close"
-            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset)
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset, arm)
             print "up"
-
-            self.hand_planner.move_hand_interface(self.trash[0] - 0.3, self.trash[1], self.trash[2])
+            if arm == 'left':
+                self.hand_planner.move_hand_interface(self.left_trash[0], self.left_trash[1], self.left_trash[2])
+                self.hand_planner.move_hand_interface(0.3, 0.3, 0.05, arm)
+            if arm == 'right':
+                self.hand_planner.move_hand_interface(self.right_trash[0], self.right_trash[1], self.right_trash[2])
+                self.hand_planner.move_hand_interface(0.3, -0.3, 0.05, arm)
             # TODO Drop chess
             self.hand_planner.gripper_open()
             print "open"

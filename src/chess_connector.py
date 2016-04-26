@@ -115,6 +115,7 @@ while checkmate is False:
         move = raw_input('Enter move:')
         if move == 'exit':
             print 'Exiting program...'
+            proc.terminate()
             pu.shutdown()
             break
         if move == 'reset':
@@ -179,5 +180,6 @@ while checkmate is False:
                 break
     except KeyboardInterrupt:
         print 'Ctrl-C trapped. Exiting...'
+        proc.terminate()
         pu.shutdown()
         break
