@@ -13,14 +13,14 @@ class PositionUpdater():
         self.offset = 0.15 - 0.93
         self.hand_planner = MH.HandMover()
         self.step = 0.0596
-        self.left_trash = (0.6, 0.3, 0.6 + self.offset)
-        self.right_trash = (0.6, -0.3, 0.6 + self.offset)
+        self.left_trash = (0.6, 0.3, 0.05)
+        self.right_trash = (0.6, -0.3, 0.05)
         self.left_arm_region = ['h1', 'g1', 'f1', 'h2', 'g2', 'f2', 'h3', 'g3', 'f3']
         self.right_arm_region = ['a1', 'b1', 'c1', 'a2', 'b2', 'c2', 'a3', 'b3', 'c3']
-        self.chess_table = {'king_w':(0, 0, 0),\
-            'king_b':(0, 0, 0),\
-            'queen_w':(0, 0, 0),\
-            'queen_b':(0, 0, 0),\
+        self.chess_table = {'king_w_':(0, 0, 0),\
+            'king_b_':(0, 0, 0),\
+            'queen_w_':(0, 0, 0),\
+            'queen_b_':(0, 0, 0),\
             'bishop_w_c':(0, 0, 0),\
             'bishop_w_f':(0, 0, 0),\
             'bishop_b_c':(0, 0, 0),\
@@ -49,10 +49,10 @@ class PositionUpdater():
             'pawn_b_f':(0, 0, 0),\
             'pawn_b_g':(0, 0, 0),\
             'pawn_b_h':(0, 0, 0)}
-        self.initial_positions = {'king_w':(0, 0, 0),\
-            'king_b':(0, 0, 0),\
-            'queen_w':(0, 0, 0),\
-            'queen_b':(0, 0, 0),\
+        self.initial_positions = {'king_w_':(0, 0, 0),\
+            'king_b_':(0, 0, 0),\
+            'queen_w_':(0, 0, 0),\
+            'queen_b_':(0, 0, 0),\
             'bishop_w_c':(0, 0, 0),\
             'bishop_w_f':(0, 0, 0),\
             'bishop_b_c':(0, 0, 0),\
@@ -132,6 +132,7 @@ class PositionUpdater():
         if len(move) != 4:
             print 'Invalid move format!'
         else:
+            print 'target grid: %s' % move
             start_y = move[0]
             start_x = move[1]
             end_y = move[2]
@@ -144,14 +145,18 @@ class PositionUpdater():
                 arm = 'left'
 		# If chess is unreachable by left arm
                 if move[0:2] in self.right_arm_region:
+                    print 'Using right arm'
                     arm = 'right'
                     # Impossible reaches by robot. Put the piece to destination directly
                     if move[2:4] in self.left_arm_region:
+                        print 'Cannot reach. Teleporting piece instead'
                         self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
                         return
 		if move[2:4] in self.right_arm_region:
+                    print 'Using right arm'
                     arm = 'right'
                     if move[0:2] in self.left_arm_region:
+                        print 'Cannot reach. Teleporting piece instead'
                         self.set_position(name, prev_pos.x + delta_x, prev_pos.y + delta_y, prev_pos.z)
                         return
                 self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + self.offset, arm)
@@ -160,7 +165,7 @@ class PositionUpdater():
                 
                 self.hand_planner.gripper_open()
                 print "open"
-                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.0145 - 0.93, arm)
+                self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.014 - 0.93, arm)
                 print "down"
                 self.hand_planner.gripper_close()
                 print "close"
@@ -196,7 +201,7 @@ class PositionUpdater():
             # TODO Pick up chess
             self.hand_planner.gripper_open()
             print "open"
-            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.0145 - 0.93, arm)
+            self.hand_planner.move_hand_interface(prev_pos.x, prev_pos.y, prev_pos.z + 0.014 - 0.93, arm)
             print "down"
             self.hand_planner.gripper_close()
             print "close"

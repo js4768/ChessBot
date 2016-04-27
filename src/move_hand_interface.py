@@ -87,11 +87,13 @@ class HandMover():
 		#return self.listener.lookupTransform('/base', 'left_gripper', rospy.Time(0))
 
 	def gripper_open(self, block = False, timeout = 5.0):
+		rospy.sleep(1.0)
 		self._left_gripper.command_position(position=70.0, block=block, timeout=timeout)
 		self._right_gripper.command_position(position=70.0, block=block, timeout=timeout)
 		rospy.sleep(1.0)
 
 	def gripper_close(self):
+		rospy.sleep(1.5)
 		self._left_gripper.set_velocity(2)
 		self._right_gripper.set_velocity(2)
 		self._left_gripper.close()

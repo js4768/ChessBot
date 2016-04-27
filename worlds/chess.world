@@ -475,7 +475,7 @@
 			</inertial>
         </link>
     </model>
-	<model name="queen_w">
+	<model name="queen_w_">
 		<pose>0.873 -0.0131 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
@@ -512,7 +512,7 @@
 			</inertial>
         </link>
     </model>
-	<model name="queen_b">
+	<model name="queen_b_">
 		<pose>0.45 -0.0131 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
@@ -549,7 +549,7 @@
 			</inertial>
         </link>
     </model>
-	<model name="king_w">
+	<model name="king_w_">
 		<pose>0.873 0.0471 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
@@ -586,7 +586,7 @@
 			</inertial>
         </link>
     </model>
-	<model name="king_b">
+	<model name="king_b_">
 		<pose>0.45 0.0471 0.788 0 0 0</pose>
 		<static>false</static>
         <link name="body">
